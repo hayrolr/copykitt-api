@@ -1,10 +1,19 @@
-import json
-import argparse
+import os
 import re
+# import json
+import argparse
+import google.generativeai as genai
 from typing import List
-from openai import OpenAI
+
 
 MAX_INPUT_LENGTH = 32
+MODEL_CONFIG = {
+  "temperature": 1,
+  "top_p": 0.99,
+  "top_k": 0,
+  "max_output_tokens": 1024,
+}
+genai.configure(api_key=os.environ["API_KEY"])
 
 
 def main():
@@ -22,30 +31,19 @@ def main():
 
 
 def generate_branding_snippet(subject: str) -> str:
-    client = OpenAI()
-    prompt = f"Generate upbeat branding snippet for {subject}"
+    model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=MODEL_CONFIG)
+    prompt = f"\n\nGenerate upbeat branding snippet for {subject}"
     print(prompt)
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
+        response = model.generate_content(prompt)
     except Exception as error:
-        message = error.args[0]
-        message = message[18:].replace('None', '"None"').replace("'", '"')
-        json_dict = json.loads(message)
-        error_message = f"An exception occurred: {type(error).__name__} - {json_dict['error']['message']}"
+        error_message = error.args[0]
 
-    if (error_message):
-        branding_text = error_message
+    if response:
+        branding_text = response.text
     else:
-        branding_text = completion.choices[0].message
-
+        branding_text = error_message
+    
     branding_text = branding_text.strip()
 
     if branding_text[-1] not in {".","!","?"}:
@@ -56,37 +54,33 @@ def generate_branding_snippet(subject: str) -> str:
 
 
 def generate_branding_keywords(subject: str) -> List[str]:
-    client = OpenAI()
-    prompt = f"Generate related branding keywords for {subject}"
+    model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=MODEL_CONFIG)
+    prompt = f"\n\nGenerate related branding keywords for {subject}"
     print(prompt)
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
+        response = model.generate_content(prompt)
     except Exception as error:
-        message = error.args[0]
-        message = message[18:].replace('None', '"None"').replace("'", '"')
-        json_dict = json.loads(message)
-        error_message = f"An exception occurred: {type(error).__name__} - {json_dict['error']['message']}"
+        error_message = error.args[0]
 
-    if (error_message):
-        keywords_text = error_message
+    if response:
+        keywords_text = response.text
     else:
-        keywords_text = completion.choices[0].message
+        keywords_text = error_message
 
     keywords_text = keywords_text.strip()
-    keywords_array = re.split(",|\n|;|-|\s+", keywords_text)
-    keywords_array = [k.lower().strip() for k in keywords_array]
-    keywords_array = [k for k in keywords_array if len(k) > 0]
+
+    # keywords_array = re.split(",|\n|;|-", keywords_text)
+    # keywords_array = [k.lower().strip() for k in keywords_array]
+    # keywords_array = [k for k in keywords_array if len(k) > 0]
     
-    print(f"Keywords: {keywords_array}")
-    return keywords_array
+    # print(f"Keywords: {keywords_array}")
+    # return keywords_array
+
+    if keywords_text[-1] not in {".","!","?"}:
+        keywords_text += "..."
+    
+    print(f"Keywords: {keywords_text}")
+    return keywords_text
 
 
 if __name__ == "__main__":
