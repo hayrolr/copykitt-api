@@ -23,7 +23,7 @@ def main():
     user_input = args.input
 
     print(f"User input: {user_input}")
-    if len(user_input) <= MAX_INPUT_LENGTH:
+    if validate_subject(user_input):
         generate_branding_snippet(user_input)
         generate_branding_keywords(user_input)
     else:
@@ -81,6 +81,9 @@ def generate_branding_keywords(subject: str) -> List[str]:
     
     print(f"Keywords: {keywords_text}")
     return keywords_text
+
+def validate_subject(subject: str) -> bool:
+    return len(subject) <= MAX_INPUT_LENGTH
 
 
 if __name__ == "__main__":
