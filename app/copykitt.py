@@ -31,6 +31,8 @@ def main():
 
 
 def generate_branding_snippet(subject: str) -> str:
+    response = None
+    error_message = None
     model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=MODEL_CONFIG)
     prompt = f"\n\nGenerate upbeat branding snippet for {subject}"
     print(prompt)
@@ -46,14 +48,16 @@ def generate_branding_snippet(subject: str) -> str:
     
     branding_text = branding_text.strip()
 
-    if branding_text[-1] not in {".","!","?"}:
-        branding_text += "..."
+    # if branding_text[-1] not in {".","!","?"}:
+    #     branding_text += "..."
     
     print(f"Snippet: {branding_text}")
     return branding_text
 
 
 def generate_branding_keywords(subject: str) -> List[str]:
+    response = None
+    error_message = None
     model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=MODEL_CONFIG)
     prompt = f"\n\nGenerate related branding keywords for {subject}"
     print(prompt)
