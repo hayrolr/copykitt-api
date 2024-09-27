@@ -13,7 +13,7 @@ const Copykitt: React.FC = () => {
     const [hasResult, setHashResult] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
 
-    let displayedElement = null;
+    let displayedElement;
 
     const onSubmit = () => {
         console.log("Submitting: " + subject);
@@ -30,7 +30,7 @@ const Copykitt: React.FC = () => {
         setIsLoading(false);
     }
 
-    const onReset = (data: any) => {
+    const onReset = () => {
         setSubject("");
         setHashResult(false);
         setIsLoading(false);
