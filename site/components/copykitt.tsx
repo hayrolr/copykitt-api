@@ -1,20 +1,23 @@
 'use client'
 import React from "react";
+import Form from "@/components/form";
+import Results from "@/components/results";
 
 const Copykitt: React.FC = () => {
-
+    const SUBJECT_LIMIT: number = 32;
     const ENDPOINT: string = "https://ilo033kdf1.execute-api.us-east-1.amazonaws.com/prod/gen-snippets-and-keywords";
 
     const [subject, setSubject] = React.useState("");
     const [snippets, setSnippets] = React.useState("");
     const [keywords, setKeywords] = React.useState("");
     const [hasResult, setHashResult] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    let resultsElement = null;
+    let displayedElement = null;
 
     const onSubmit = () => {
-        resultsElement = null;
         console.log("Submitting: " + subject);
+        setIsLoading(true);
         fetch(`${ENDPOINT}?subject=${subject}`)
             .then((res) => res.json())
             .then(onResult);
@@ -24,27 +27,25 @@ const Copykitt: React.FC = () => {
         setSnippets(data.snippets.replaceAll("*", ""));
         setKeywords(data.keywords.replaceAll("*", ""));
         setHashResult(true);
+        setIsLoading(false);
+    }
+
+    const onReset = (data: any) => {
+        setSubject("");
+        setHashResult(false);
+        setIsLoading(false);
     }
 
     if (hasResult) {
-        resultsElement = (
-            <div>
-                Here are your results:
-                <div>Snippets:</div>
-                <textarea rows={15} cols={65} value={snippets} onChange={(e) => setSnippets(e.target.value)}></textarea>
-                <div>Keywords:</div>
-                <textarea rows={15} cols={65} value={keywords} onChange={(e) => setKeywords(e.target.value)}></textarea>
-            </div>
-        )
+        displayedElement = <Results subject={subject} snippets={snippets} setSnippets={setSnippets} keywords={keywords} setKeywords={setKeywords}  onBack={onReset}/>
+    } else {
+        displayedElement = <Form subject={subject} setSubject={setSubject} onSubmit={onSubmit}  isLoading={isLoading} subjectLimit={SUBJECT_LIMIT}/>
     }
 
     return (
         <>
-        <h1>CopyKitt</h1>
-            <p>Tell me what your brand is about and I will generate copy and keywords for you.</p>
-            <input type={"text"} placeholder={"coffee"} value={subject} onChange={(e) => setSubject(e.currentTarget.value)}></input>
-            <button onClick={onSubmit}>Submit</button>
-            {resultsElement}
+            <h1>CopyKitt</h1>
+            {displayedElement}
         </>
     );
 
