@@ -10,17 +10,34 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = (props) => {
+    const resultSection = (label: string, body: any) => {
+        return (
+            <div className={"bg-slate-700 p-4 my-4 rounded-md"}>
+                <div className={"text-slate-400 text-sm font-bold mb-4"}>{label}</div>
+                <textarea className={"w-full p-2 my-2 text-slate-700 text-sm rounded-md bg-slate-300"} rows={7} value={body} readOnly={true}></textarea>
+            </div>
+        );
+    };
+
     return (
         <>
             <div>
-                <div><b>Your subject</b></div>
-                <div>{props.subject}</div>
-                <div><b>Snippets</b></div>
-                <div><textarea rows={10} cols={65} value={props.snippets} onChange={(e) => props.setSnippets(e.target.value)} readOnly={true}></textarea></div>
-                <div><b>Keywords</b></div>
-                <div><textarea rows={10} cols={65} value={props.keywords} onChange={(e) => props.setKeywords(e.target.value)} readOnly={true}></textarea></div>
+                <div className={"mb-6 text-slate-400 text-sm"}>
+                    <p>Here are your results... remember: "With great power comes great responsibility".</p>
+                </div>
+                <div className={"bg-slate-700 p-4 my-3 rounded-md"}>
+                    <div className={"text-slate-400 text-sm font-bold mb-4"}>Your subject</div>
+                    <div className={"text-lg"}>{props.subject}</div>
+                </div>
+                {resultSection("Branding Snippets", props.snippets)}
+                {resultSection("Branding Keywords", props.keywords)}
             </div>
-            <button onClick={props.onBack}>Back</button>
+            <button
+                className={"bg-gradient-to-r from-teal-400 to-blue-500 disabled:opacity-50 w-full mt-3 p-2 rounded-md text-lg"}
+                onClick={props.onBack}
+            >
+                Back
+            </button>
         </>
     );
 }
